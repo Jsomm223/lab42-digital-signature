@@ -21,7 +21,6 @@ import com.atlassian.velocity.htmlsafe.HtmlSafe;
 import com.baloise.confluence.digitalsignature.ContextHelper;
 import com.baloise.confluence.digitalsignature.Markdown;
 import com.baloise.confluence.digitalsignature.Signature2;
-import org.apache.velocity.tools.generic.DateTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +36,8 @@ import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -67,6 +68,12 @@ public class DigitalSignatureService {
   private final I18nResolver i18nResolver;
   private final ContextHelper contextHelper = new ContextHelper();
   private final transient Markdown markdown = new Markdown();
+
+  public static void main(String[] args) {
+    LocalDateTime now = LocalDateTime.now();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    String formattedDate = now.format(formatter);
+  }
 
   public DigitalSignatureService(@ComponentImport BandanaManager bandanaManager,
                                  @ComponentImport SettingsManager settingsManager,
@@ -191,7 +198,7 @@ public class DigitalSignatureService {
     context.put("profiles", contextHelper.union(signed, missing));
     context.put("signature", signature);
     context.put("currentDate", new Date());
-    context.put("date", new DateTool());
+    context.put("date", formattedDate);
 
     return getRenderedTemplate("templates/export.vm", context);
   }
@@ -231,7 +238,7 @@ public class DigitalSignatureService {
                                   .map(mapping).collect(toList()));
 
     context.put("currentDate", new Date());
-    context.put("date", new DateTool());
+    context.put("date", formattedDate);
     return Response.ok(getRenderedTemplate("templates/email.vm", context)).build();
   }
 }

@@ -111,7 +111,13 @@
             <version>2.0.0-alpha1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.velocity.tools</groupId>
+            <artifactId>velocity-tools-generic</artifactId>
+            <version>3.1</version>
+        </dependency>
     </dependencies>
+
 
     <build>
         <plugins>

@@ -23,7 +23,6 @@ import com.atlassian.user.EntityException;
 import com.atlassian.user.Group;
 import com.atlassian.user.GroupManager;
 import com.atlassian.user.search.page.Pager;
-import org.apache.velocity.tools.generic.DateTool;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,6 +30,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidParameterException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.atlassian.confluence.renderer.radeox.macros.MacroUtils.defaultVelocityContext;
@@ -55,6 +56,12 @@ public class DigitalSignatureMacro implements Macro {
   private final transient Markdown markdown = new Markdown();
   private final Set<String> all = new HashSet<>();
   private final ContextHelper contextHelper = new ContextHelper();
+
+  public static void main(String[] args) {
+    LocalDateTime now = LocalDateTime.now();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    String formattedDate = now.format(formatter);
+  }
 
   @Autowired
   public DigitalSignatureMacro(@ComponentImport BandanaManager bandanaManager,
@@ -106,7 +113,7 @@ public class DigitalSignatureMacro implements Macro {
     boolean protectedContentAccess = protectedContent && (permissionManager.hasPermission(currentUser, Permission.EDIT, page) || signature.hasSigned(currentUserName));
 
     Map<String, Object> context = defaultVelocityContext();
-    context.put("date", new DateTool());
+    context.put("date", formattedDate);
     context.put("markdown", markdown);
 
     if (signature.isSignatureMissing(currentUserName)) {
